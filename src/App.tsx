@@ -1,10 +1,14 @@
 import "./App.css";
+import TodoInput from "./components/TodoInput";
+import TodoList from "./components/TodoList";
 
-function App() {
+function Todo() {
   return (
-    <div className='App'>
+    <div data-testid="app" className='App'>
+      <TodoInput />
+      <TodoList />
     </div>
   );
 }
 
-export default App;
+export default Todo;

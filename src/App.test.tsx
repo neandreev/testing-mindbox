@@ -1,15 +1,19 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import Todo from "./App";
 
-// test('renders learn react link', () => {
-//   const { getByText } = render(
-//     <Provider store={store}>
-//       <App />
-//     </Provider>
-//   );
+test("TodoInput and TodoList are rendered", () => {
+  render(
+    <Provider store={store}>
+      <Todo />
+    </Provider>
+  );
 
-//   expect(getByText(/learn/i)).toBeInTheDocument();
-// });
+  const app = screen.getByTestId("app");
+  const todoInput = screen.getByTestId("todo-input");
+  const todoList = screen.getByTestId("todo-list");
+
+  expect(app).toContainElement(todoInput);
+  expect(app).toContainElement(todoList);
+});

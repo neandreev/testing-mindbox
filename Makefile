@@ -6,3 +6,6 @@ develop:
 
 build:
 	pnpm run build
+
+test:
+	pnpm test
