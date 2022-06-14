@@ -51,7 +51,7 @@ const TodoInput: FC = () => {
         />
       </Form.Item>
 
-      <Button type='primary' htmlType='submit'>
+      <Button data-testid="add-todo-button" type='primary' htmlType='submit'>
         Add todo
       </Button>
     </Form>

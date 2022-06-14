@@ -24,7 +24,7 @@ const TodoList: FC = () => {
       data-testid='todo-list'
       dataSource={todos}
       renderItem={(item) => {
-        const className = item.isCompleted ? styles["todo-item"] : "";
+        const className = item.isCompleted ? styles["todo-completed"] : "";
 
         return (
           <List.Item
