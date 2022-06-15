@@ -1,0 +1,9 @@
+.todo-actions {
+  margin: 10px 5px;
+}
+
+.todo-actions > div {
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -11,7 +11,7 @@ const initialState: {
 };
 
 const counterSlice = createSlice({
-  name: "todo",
+  name: "todos",
   initialState,
   reducers: {
     addTodo: (state, action: PayloadAction<string>) => {
@@ -22,10 +22,15 @@ const counterSlice = createSlice({
       };
       state.todos.push(newTodo);
     },
-    toggleTodoCompletion: (state, action: PayloadAction<string>) => {
+    toggleTodo: (state, action: PayloadAction<string>) => {
       const todoToUpdate = _find(state.todos, { id: action.payload });
       if (!todoToUpdate) return state;
       todoToUpdate.isCompleted = !todoToUpdate.isCompleted;
+    },
+    updateTodo: (state, action: PayloadAction<{ id: string, text: string }>) => {
+      const todoToUpdate = _find(state.todos, { id: action.payload.id });
+      if (!todoToUpdate) return state;
+      todoToUpdate.text = action.payload.text;
     },
     removeTodo: (state, action: PayloadAction<string>) => {
       const newTodosState = state.todos.filter(
@@ -33,9 +38,15 @@ const counterSlice = createSlice({
       );
       state.todos = newTodosState;
     },
+    removeCompletedTodos: (state) => {
+      const newTodosState = state.todos.filter(
+        (todo) => !todo.isCompleted
+      );
+      state.todos = newTodosState;
+    }
   },
 });
 
-export const { addTodo, toggleTodoCompletion, removeTodo } =
+export const { addTodo, toggleTodo, updateTodo, removeTodo, removeCompletedTodos } =
   counterSlice.actions;
 export default counterSlice.reducer;

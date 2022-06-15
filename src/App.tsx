@@ -1,14 +1,18 @@
-import "./App.css";
-import TodoInput from "./components/TodoInput";
-import TodoList from "./components/TodoList";
+import "./App.less";
+import TodosActions from "./components/TodosActions";
+import TodosHeader from "./components/TodosHeader";
+import TodosInput from "./components/TodosInput";
+import TodosList from "./components/TodosList";
 
-function Todo() {
-  return (
-    <div data-testid="app" className='App'>
-      <TodoInput />
-      <TodoList />
+const Todo = () => (
+  <div data-testid='app' className='app'>
+    <div style={{ maxWidth: "470px" }}>
+      <TodosHeader />
+      <TodosInput />
+      <TodosList />
+      <TodosActions />
     </div>
-  );
-}
+  </div>
+);
 
 export default Todo;

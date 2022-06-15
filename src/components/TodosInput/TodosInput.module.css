@@ -1,0 +1,12 @@
+.form {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form > *:first-child {
+  flex-grow: 1;
+}
+
+.form > * {
+  margin: 5px;
+}

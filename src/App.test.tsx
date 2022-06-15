@@ -1,11 +1,11 @@
 import { Provider } from "react-redux";
-import { cleanup, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { store } from "./store";
 import Todo from "./App";
 
-test("TodoInput and TodoList are rendered", () => {
+test("TodosInput and TodosList are rendered", () => {
   render(
     <Provider store={store}>
       <Todo />
@@ -13,11 +13,11 @@ test("TodoInput and TodoList are rendered", () => {
   );
 
   const app = screen.getByTestId("app");
-  const todoInput = screen.getByTestId("todo-input");
-  const todoList = screen.getByTestId("todo-list");
+  const todosInput = screen.getByTestId("todo-input");
+  const todosList = screen.getByTestId("todo-list");
 
-  expect(app).toContainElement(todoInput);
-  expect(app).toContainElement(todoList);
+  expect(app).toContainElement(todosInput);
+  expect(app).toContainElement(todosList);
 });
 
 test("Adding and removing todos", async () => {
@@ -74,15 +74,64 @@ test("Completing and uncompleting tasks", async () => {
 
   const user = userEvent.setup();
 
-  //completing both two todos
-  const [firstTodo, secondTodo] = screen.queryAllByTestId('todo');
-  await user.click(firstTodo);
-  await user.click(secondTodo);
-  expect(firstTodo).toHaveClass('todo-completed');
-  expect(secondTodo).toHaveClass('todo-completed');
+  //completing both two todos and expecting them to have completion className
+  const firstTodoToggle = await screen.findByTestId("toggle-todo-1");
+  await user.click(firstTodoToggle);
+  expect(await screen.findByTestId("todo-1")).toHaveClass("todo-completed");
 
-  //uncompleting second todo
-  await user.click(secondTodo);
-  expect(firstTodo).toHaveClass('todo-completed');
-  expect(secondTodo).not.toHaveClass('todo-completed');
+  const secondTodoToggle = await screen.findByTestId("toggle-todo-3");
+  await user.click(secondTodoToggle);
+  expect(await screen.findByTestId("todo-3")).toHaveClass("todo-completed");
+
+  //uncompleting second todo and expecting only first task to be completed
+  await user.click(await screen.findByTestId("toggle-todo-3"));
+
+  expect(await screen.findByTestId("todo-1")).toHaveClass("todo-completed");
+  expect(await screen.findByTestId("todo-3")).not.toHaveClass("todo-completed");
+});
+
+test("Renaming tasks", async () => {
+  render(
+    <Provider store={store}>
+      <Todo />
+    </Provider>
+  );
+
+  const user = userEvent.setup();
+
+  //renaming first task
+  await user.click(await screen.findByTestId("rename-todo-3"));
+  await user.clear(await screen.findByTestId("input-todo-3"));
+  await user.type(await screen.findByTestId("input-todo-3"), "buy cucumbers");
+  await user.keyboard("[Enter]");
+
+  //expecting first task text to be 'buy cucumbers'
+  expect(await screen.findByTestId("text-todo-3")).toHaveTextContent(
+    "buy cucumbers"
+  );
+
+  //trying to rename first task to already existing task
+  await user.click(await screen.findByTestId("rename-todo-3"));
+  await user.clear(await screen.findByTestId("input-todo-3"));
+  await user.type(await screen.findByTestId("input-todo-3"), "buy a banana");
+  await user.keyboard("[Enter]");
+
+  //expecting first task not to be renamed and be returned to value before renaming
+  expect(await screen.findByTestId("text-todo-3")).not.toHaveTextContent(
+    "buy a banana"
+  );
+
+  expect(await screen.findByTestId("text-todo-3")).toHaveTextContent(
+    "buy cucumbers"
+  );
+
+  //trying to rename first task to empty text
+  await user.click(await screen.findByTestId("rename-todo-3"));
+  await user.clear(await screen.findByTestId("input-todo-3"));
+  await user.keyboard("[Enter]");
+
+  //expecting first task not to be renamed and be returned to value before renaming
+  expect(await screen.findByTestId("text-todo-3")).toHaveTextContent(
+    "buy cucumbers"
+  );
 });

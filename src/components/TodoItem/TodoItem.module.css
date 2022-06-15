@@ -1,0 +1,29 @@
+.todo {
+  display: flex;
+  font-size: 20px;
+}
+
+.todo > * {
+  margin: 0 2px;
+}
+
+.todo-text {
+  margin-left: 10px;
+  flex-grow: 1;
+}
+
+.todo-completed {
+  color: #cccccc;
+  text-decoration: line-through;
+}
+
+.todo-action-icon {
+  font-size: 20px;
+}
+
+.todo-input {
+  all: unset;
+  width: 100%;
+  min-width: 0;
+  margin-left: 10px;
+}
