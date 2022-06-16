@@ -1,3 +1,5 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/fb951e2d60dcd3005e83/maintainability)](https://codeclimate.com/github/neandreev/testing-mindbox/maintainability)
+
 # Тестовое задание для Mindbox: Todo-приложение
 
 ## Деплой: https://testing-mindbox.vercel.app
