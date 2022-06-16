@@ -5,7 +5,7 @@ import { FC, useEffect, useState } from "react";
 import { Input, List, Tooltip } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { removeTodo, toggleTodo, updateTodo } from "../../store/slices/todos";
+import { updateTodo } from "../../store/slices/todos";
 import { TodoI } from "../../types";
 
 import TodoDelete from "../TodoDelete";
@@ -14,54 +14,51 @@ import TodoToggle from "../TodoToggle";
 
 import styles from "./TodoItem.module.css";
 
+const getPossibleTodoUpdateErrors = (
+  todos: TodoI[],
+  todo: TodoI,
+  value: string
+) => [
+  {
+    condition: !!_find(
+      todos,
+      ({ text, id }) => text === value && id !== todo.id
+    ),
+    text: "Todo with this name is already exists",
+  },
+  {
+    condition: value === "",
+    text: "Todo can't be empty",
+  },
+];
+
 interface TodoItemPropsI {
-  item: TodoI;
+  todo: TodoI;
 }
 
-const TodoItem: FC<TodoItemPropsI> = ({ item }) => {
+const TodoItem: FC<TodoItemPropsI> = ({ todo }) => {
   const dispatch = useAppDispatch();
   const todos = useAppSelector((store) => store.todos.todos);
 
   const [errorText, setErrorText] = useState("");
   const [showError, setShowError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [todo, setTodo] = useState(item.text);
-  const [prevTodo, setPrevTodo] = useState(item.text);
+  const [todoValue, setTodoValue] = useState(todo.text);
+  const [prevTodoValue, setPrevTodoValue] = useState(todo.text);
 
   const listClassName = cn(styles.todo, {
-    [styles["todo-completed"]]: item.isCompleted,
+    [styles["todo-completed"]]: todo.isCompleted,
   });
-
-  const handleToggleTodo = (id: string) => {
-    dispatch(toggleTodo(id));
-  };
-
-  const handleRemoveTodo = (id: string) => {
-    dispatch(removeTodo(id));
-  };
 
   const handleUpdateTodo = () => {
     if (!isEditing) return setIsEditing(true);
     setIsEditing(!isEditing);
 
-    const todosErrors = [
-      {
-        condition: !!_find(
-          todos,
-          ({ text, id }) => text === todo && id !== item.id
-        ),
-        text: "Todo with this name is already exists",
-      },
-      {
-        condition: todo === "",
-        text: "Todo can't be empty",
-      },
-    ];
-
-    const applicableError = _find(todosErrors, ["condition", true]);
+    const possibleErrors = getPossibleTodoUpdateErrors(todos, todo, todoValue);
+    const applicableError = _find(possibleErrors, ["condition", true]);
 
     if (applicableError) {
-      setTodo(prevTodo);
+      setTodoValue(prevTodoValue);
       setShowError(true);
       setErrorText(applicableError.text);
 
@@ -71,22 +68,18 @@ const TodoItem: FC<TodoItemPropsI> = ({ item }) => {
       return;
     }
 
-    setTodo(todo.trim());
-    setPrevTodo(todo.trim());
-    dispatch(updateTodo({ id: item.id, text: todo.trim() }));
+    setTodoValue(todoValue.trim());
+    setPrevTodoValue(todoValue.trim());
+    dispatch(updateTodo({ id: todo.id, text: todoValue.trim() }));
   };
 
   useEffect(() => {
-    setTodo(item.text);
-  }, [item]);
+    setTodoValue(todo.text);
+  }, [todo]);
 
   return (
-    <List.Item className={listClassName} data-testid={`todo-${item.id}`}>
-      <TodoToggle
-        id={item.id}
-        isCompleted={item.isCompleted}
-        onClick={() => handleToggleTodo(item.id)}
-      />
+    <List.Item className={listClassName} data-testid={`todo-${todo.id}`}>
+      <TodoToggle todo={todo} />
       <Tooltip
         placement='bottom'
         color='#ed1a12ee'
@@ -96,28 +89,24 @@ const TodoItem: FC<TodoItemPropsI> = ({ item }) => {
         {isEditing ? (
           <Input
             autoFocus
-            value={todo}
-            onChange={(e) => setTodo(e.target.value)}
-            onPressEnter={() => handleUpdateTodo()}
-            data-testid={`input-todo-${item.id}`}
+            value={todoValue}
+            onChange={(e) => setTodoValue(e.target.value)}
+            onPressEnter={handleUpdateTodo}
+            data-testid={`input-todo-${todo.id}`}
             className={cn(styles["todo-input"], styles["todo-text"])}
-            onBlur={() => handleUpdateTodo()}
+            onBlur={handleUpdateTodo}
           />
         ) : (
           <span
             className={styles["todo-text"]}
-            data-testid={`text-todo-${item.id}`}
+            data-testid={`text-todo-${todo.id}`}
           >
-            {todo}
+            {todoValue}
           </span>
         )}
       </Tooltip>
-      <TodoRename
-        onClick={() => handleUpdateTodo()}
-        id={item.id}
-        isCompleted={item.isCompleted}
-      />
-      <TodoDelete onClick={() => handleRemoveTodo(item.id)} />
+      <TodoRename onClick={handleUpdateTodo} todo={todo} />
+      <TodoDelete id={todo.id} />
     </List.Item>
   );
 };

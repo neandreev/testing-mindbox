@@ -19,7 +19,7 @@ const TodosList: FC = () => {
       data-testid='todo-list'
       dataSource={sortedTodos}
       className={styles["todo-list"]}
-      renderItem={(item) => <TodoItem item={item} />}
+      renderItem={(todo) => <TodoItem todo={todo} />}
     />
   );
 };
